@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FRUIT_SYMBOL } from '../game/cards'
 import {
   boardBounds,
@@ -18,9 +18,7 @@ type Props = {
   selectedCard: CardDef | null
   rotation: Rotation
   onPlace: (origin: Coord) => void
-  /** 教学高亮格子 */
   guideCells?: Coord[]
-  /** 额外合法性（教学强制落点） */
   isOriginAllowed?: (origin: Coord) => boolean
 }
 
@@ -37,27 +35,43 @@ export function Board({
   isOriginAllowed,
 }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null)
-  const [pan, setPan] = useState({ x: 40, y: 40 })
+  const [pan, setPan] = useState({ x: 24, y: 24 })
   const [zoom, setZoom] = useState(1)
+  const [panMode, setPanMode] = useState(false)
   const [hoverOrigin, setHoverOrigin] = useState<Coord | null>(null)
+
+  const pointersRef = useRef(
+    new Map<number, { x: number; y: number }>(),
+  )
   const dragRef = useRef<{
-    active: boolean
+    panning: boolean
+    placed: boolean
     startX: number
     startY: number
     panX: number
     panY: number
-  }>({ active: false, startX: 0, startY: 0, panX: 0, panY: 0 })
+    pinchDist: number
+    pinchZoom: number
+  }>({
+    panning: false,
+    placed: false,
+    startX: 0,
+    startY: 0,
+    panX: 0,
+    panY: 0,
+    pinchDist: 0,
+    pinchZoom: 1,
+  })
 
   const guideKeys = useMemo(() => coordSet(guideCells), [guideCells])
 
   const bounds = useMemo(() => {
     const b = boardBounds(state.board)
-    const extras = guideCells
     let minX = b?.minX ?? 0
     let maxX = b?.maxX ?? 3
     let minY = b?.minY ?? 0
     let maxY = b?.maxY ?? 2
-    for (const c of extras) {
+    for (const c of guideCells) {
       minX = Math.min(minX, c.x)
       maxX = Math.max(maxX, c.x)
       minY = Math.min(minY, c.y)
@@ -75,7 +89,7 @@ export function Board({
   const rows = bounds.maxY - bounds.minY + 1
 
   const preview = useMemo(() => {
-    if (!selectedCard || !hoverOrigin) return null
+    if (!selectedCard || !hoverOrigin || panMode) return null
     const baseLegal = isLegalPlacement(
       state.board,
       selectedCard,
@@ -86,7 +100,7 @@ export function Board({
     const legal = baseLegal && allowed
     const cells = cardCellsAt(selectedCard, hoverOrigin, rotation)
     return { legal, cells }
-  }, [selectedCard, hoverOrigin, rotation, state.board, isOriginAllowed])
+  }, [selectedCard, hoverOrigin, rotation, state.board, isOriginAllowed, panMode])
 
   const screenToOrigin = useCallback(
     (clientX: number, clientY: number): Coord | null => {
@@ -105,47 +119,133 @@ export function Board({
     [bounds.minX, bounds.minY, pan.x, pan.y, zoom],
   )
 
+  const isOriginLegal = useCallback(
+    (origin: Coord) => {
+      if (!selectedCard) return false
+      const base = isLegalPlacement(state.board, selectedCard, origin, rotation)
+      if (!base) return false
+      return isOriginAllowed ? isOriginAllowed(origin) : true
+    },
+    [selectedCard, state.board, rotation, isOriginAllowed],
+  )
+
+  // 开局时自适应缩放居中，方便手机可视
+  useEffect(() => {
+    if (state.placements.length > 1) return
+    const el = viewportRef.current
+    if (!el) return
+    const w = el.clientWidth
+    const h = el.clientHeight
+    if (w < 40 || h < 40) return
+    const worldW = cols * STEP
+    const worldH = rows * STEP
+    const fit = Math.min(
+      1.15,
+      Math.max(0.55, Math.min(w / worldW, h / worldH) * 0.92),
+    )
+    setZoom(fit)
+    setPan({
+      x: Math.max(12, (w - worldW * fit) / 2),
+      y: Math.max(12, (h - worldH * fit) / 2),
+    })
+  }, [state.placements.length, state.mode, cols, rows])
+
   const onPointerDown = (e: React.PointerEvent) => {
-    if (e.button === 1 || e.button === 2 || e.altKey || !selectedCard) {
-      dragRef.current = {
-        active: true,
-        startX: e.clientX,
-        startY: e.clientY,
-        panX: pan.x,
-        panY: pan.y,
+    pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    const multi = pointersRef.current.size >= 2
+    const shouldPan =
+      panMode || multi || e.button === 1 || e.button === 2 || e.altKey || !selectedCard
+
+    if (shouldPan) {
+      dragRef.current.panning = true
+      dragRef.current.placed = false
+      dragRef.current.startX = e.clientX
+      dragRef.current.startY = e.clientY
+      dragRef.current.panX = pan.x
+      dragRef.current.panY = pan.y
+      if (multi) {
+        const pts = [...pointersRef.current.values()]
+        const a = pts[0]!
+        const b = pts[1]!
+        dragRef.current.pinchDist = Math.hypot(a.x - b.x, a.y - b.y)
+        dragRef.current.pinchZoom = zoom
       }
-      ;(e.target as HTMLElement).setPointerCapture?.(e.pointerId)
+      ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
+      setHoverOrigin(null)
+      return
     }
+
+    dragRef.current.panning = false
+    dragRef.current.placed = false
+    setHoverOrigin(screenToOrigin(e.clientX, e.clientY))
+    ;(e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId)
   }
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (dragRef.current.active) {
-      const dx = e.clientX - dragRef.current.startX
-      const dy = e.clientY - dragRef.current.startY
-      setPan({
-        x: dragRef.current.panX + dx,
-        y: dragRef.current.panY + dy,
-      })
+    if (pointersRef.current.has(e.pointerId)) {
+      pointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    }
+
+    if (dragRef.current.panning) {
+      if (pointersRef.current.size >= 2) {
+        const pts = [...pointersRef.current.values()]
+        const a = pts[0]!
+        const b = pts[1]!
+        const dist = Math.hypot(a.x - b.x, a.y - b.y)
+        if (dragRef.current.pinchDist > 0) {
+          const scale = dist / dragRef.current.pinchDist
+          setZoom(
+            Math.min(1.8, Math.max(0.45, dragRef.current.pinchZoom * scale)),
+          )
+        }
+        const dx = e.clientX - dragRef.current.startX
+        const dy = e.clientY - dragRef.current.startY
+        setPan({
+          x: dragRef.current.panX + dx * 0.5,
+          y: dragRef.current.panY + dy * 0.5,
+        })
+      } else {
+        const dx = e.clientX - dragRef.current.startX
+        const dy = e.clientY - dragRef.current.startY
+        setPan({
+          x: dragRef.current.panX + dx,
+          y: dragRef.current.panY + dy,
+        })
+      }
       return
     }
-    if (selectedCard) {
+
+    if (selectedCard && !panMode) {
       setHoverOrigin(screenToOrigin(e.clientX, e.clientY))
     }
   }
 
-  const onPointerUp = () => {
-    if (dragRef.current.active) {
-      dragRef.current.active = false
+  const endPointer = (e: React.PointerEvent) => {
+    pointersRef.current.delete(e.pointerId)
+
+    if (dragRef.current.panning) {
+      if (pointersRef.current.size === 0) {
+        dragRef.current.panning = false
+      }
       return
     }
-    if (!selectedCard || !preview?.legal || !hoverOrigin) return
-    onPlace(hoverOrigin)
+
+    if (dragRef.current.placed || panMode || !selectedCard) {
+      setHoverOrigin(null)
+      return
+    }
+
+    const origin = screenToOrigin(e.clientX, e.clientY)
+    if (origin && isOriginLegal(origin)) {
+      dragRef.current.placed = true
+      onPlace(origin)
+    }
     setHoverOrigin(null)
   }
 
   const onWheel = (e: React.WheelEvent) => {
     e.preventDefault()
-    setZoom((z) => Math.min(1.8, Math.max(0.5, z - e.deltaY * 0.001)))
+    setZoom((z) => Math.min(1.8, Math.max(0.45, z - e.deltaY * 0.001)))
   }
 
   const cells: React.ReactNode[] = []
@@ -197,30 +297,56 @@ export function Board({
   return (
     <div className="board-wrap">
       <div className="board-toolbar">
-        <span>滚轮缩放 · 未选牌时拖拽平移 · Alt+拖拽也可平移</span>
+        <span className="board-toolbar__hint board-toolbar__hint--desktop">
+          滚轮缩放 · 未选牌拖拽平移 · 双指缩放平移
+        </span>
+        <span className="board-toolbar__hint board-toolbar__hint--mobile">
+          点按放置 · 平移模式/双指拖动棋盘
+        </span>
         <div className="board-toolbar__actions">
-          <button type="button" className="btn btn-ghost" onClick={() => setZoom(1)}>
-            重置缩放
+          <button
+            type="button"
+            className={`btn btn-ghost${panMode ? ' is-active' : ''}`}
+            onClick={() => {
+              setPanMode((v) => !v)
+              setHoverOrigin(null)
+            }}
+          >
+            {panMode ? '放置模式' : '平移模式'}
           </button>
           <button
             type="button"
             className="btn btn-ghost"
-            onClick={() => setPan({ x: 40, y: 40 })}
+            onClick={() => setZoom((z) => Math.min(1.8, z + 0.15))}
           >
-            重置位置
+            +
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => setZoom((z) => Math.max(0.45, z - 0.15))}
+          >
+            −
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => {
+              setZoom(1)
+              setPan({ x: 24, y: 24 })
+            }}
+          >
+            复位
           </button>
         </div>
       </div>
       <div
         ref={viewportRef}
-        className="board-viewport"
+        className={`board-viewport${panMode ? ' is-pan-mode' : ''}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerLeave={() => {
-          dragRef.current.active = false
-          setHoverOrigin(null)
-        }}
+        onPointerUp={endPointer}
+        onPointerCancel={endPointer}
         onWheel={onWheel}
         onContextMenu={(e) => e.preventDefault()}
       >

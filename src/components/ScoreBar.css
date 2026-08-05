@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 14px 20px;
+  gap: 12px;
+  padding: 12px 16px;
   background: color-mix(in srgb, var(--panel) 88%, #1a2e14);
   border-bottom: 1px solid var(--line);
   flex-wrap: wrap;
@@ -31,14 +31,14 @@
 .score-bar__stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px 20px;
+  gap: 10px 16px;
 }
 
 .stat {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 56px;
+  min-width: 48px;
 }
 
 .stat__label {
@@ -80,4 +80,40 @@
 .stat.rank .stat__value {
   font-size: 0.95rem;
   color: var(--accent);
+}
+
+@media (max-width: 800px) {
+  .score-bar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .score-bar__brand h1 {
+    font-size: 1.35rem;
+  }
+
+  .score-bar__brand span {
+    font-size: 0.78rem;
+  }
+
+  .score-bar__stats {
+    gap: 8px 12px;
+    width: 100%;
+  }
+
+  .stat {
+    min-width: 44px;
+  }
+
+  .stat__label {
+    font-size: 0.62rem;
+  }
+
+  .stat__value {
+    font-size: 0.95rem;
+  }
+
+  .stat.rank {
+    display: none;
+  }
 }

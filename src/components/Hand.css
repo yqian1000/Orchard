@@ -22,11 +22,22 @@
   color: var(--ink);
 }
 
+.hand-panel__header .btn {
+  min-height: 40px;
+}
+
 .hand-panel__hint {
   margin: 0;
   font-size: 0.85rem;
   color: var(--muted);
   line-height: 1.4;
+}
+
+.hand-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
 }
 
 .hand-panel__cards {
@@ -92,5 +103,19 @@
   }
   50% {
     box-shadow: 0 0 0 5px rgba(230, 195, 92, 0.7);
+  }
+}
+
+@media (max-width: 800px) {
+  .hand-panel__card-wrap .card-view__cell {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  .hand-panel__next .card-view__cell {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
   }
 }

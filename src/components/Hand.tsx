@@ -9,7 +9,6 @@ type Props = {
   onSelect: (cardId: string) => void
   onRotate: () => void
   nextCard?: CardDef | null
-  /** 教学：只允许点这张牌 */
   lockedCardId?: string | null
   allowRotate?: boolean
   highlightRotate?: boolean
@@ -42,35 +41,37 @@ export function Hand({
       <p className="hand-panel__hint">
         {lockedCardId
           ? '请使用高亮手牌，放到棋盘金色区域。'
-          : '选一张牌，移动到棋盘预览，点击合法位置放置。'}
+          : '选一张牌，在棋盘上滑动预览，松手放置。手机可用「平移模式」。'}
       </p>
-      <div className="hand-panel__cards">
-        {hand.map((card) => {
-          const lockedOut = lockedCardId !== null && card.id !== lockedCardId
-          const guided = lockedCardId === card.id
-          return (
-            <div
-              key={card.id}
-              className={`hand-panel__card-wrap${guided ? ' is-guided' : ''}${lockedOut ? ' is-locked-out' : ''}`}
-            >
-              <CardView
-                card={card}
-                rotation={selectedCardId === card.id ? rotation : 0}
-                selected={selectedCardId === card.id}
-                onClick={lockedOut ? undefined : () => onSelect(card.id)}
-              />
-            </div>
-          )
-        })}
-        {hand.length === 0 && <p className="hand-panel__empty">手牌已打完</p>}
-      </div>
-
-      {nextCard && (
-        <div className="hand-panel__next">
-          <h3>下一张</h3>
-          <CardView card={nextCard} compact />
+      <div className="hand-panel__body">
+        <div className="hand-panel__cards">
+          {hand.map((card) => {
+            const lockedOut = lockedCardId !== null && card.id !== lockedCardId
+            const guided = lockedCardId === card.id
+            return (
+              <div
+                key={card.id}
+                className={`hand-panel__card-wrap${guided ? ' is-guided' : ''}${lockedOut ? ' is-locked-out' : ''}`}
+              >
+                <CardView
+                  card={card}
+                  rotation={selectedCardId === card.id ? rotation : 0}
+                  selected={selectedCardId === card.id}
+                  onClick={lockedOut ? undefined : () => onSelect(card.id)}
+                />
+              </div>
+            )
+          })}
+          {hand.length === 0 && <p className="hand-panel__empty">手牌已打完</p>}
         </div>
-      )}
+
+        {nextCard && (
+          <div className="hand-panel__next">
+            <h3>下一张</h3>
+            <CardView card={nextCard} compact />
+          </div>
+        )}
+      </div>
 
       {selectedCardId && (
         <div className="hand-panel__preview">

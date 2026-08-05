@@ -50,3 +50,18 @@
   color: #6a5410 !important;
   font-weight: 600;
 }
+
+@media (max-width: 800px) {
+  .tutorial-panel {
+    margin: 0 10px 8px;
+    padding: 10px 12px;
+  }
+
+  .tutorial-panel h3 {
+    font-size: 0.92rem;
+  }
+
+  .tutorial-panel p {
+    font-size: 0.8rem;
+  }
+}
