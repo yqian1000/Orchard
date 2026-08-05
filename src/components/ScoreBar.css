@@ -1,0 +1,83 @@
+.score-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: color-mix(in srgb, var(--panel) 88%, #1a2e14);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.score-bar__brand {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.score-bar__brand h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  letter-spacing: 0.02em;
+  color: var(--leaf);
+}
+
+.score-bar__brand span {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.score-bar__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 56px;
+}
+
+.stat__label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.stat__value {
+  font-size: 1.15rem;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__value.rotten {
+  color: var(--rotten);
+}
+
+.stat__goal {
+  font-size: 0.75em;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 1px;
+}
+
+.stat.color-apple .stat__value {
+  color: #c43c32;
+}
+
+.stat.color-lemon .stat__value {
+  color: #a88a10;
+}
+
+.stat.color-plum .stat__value {
+  color: #5a3f8a;
+}
+
+.stat.rank .stat__value {
+  font-size: 0.95rem;
+  color: var(--accent);
+}

@@ -1,0 +1,61 @@
+.card-view {
+  display: inline-block;
+  padding: 6px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: var(--card-bg);
+  box-shadow: 0 2px 0 rgba(28, 48, 24, 0.12);
+  cursor: default;
+}
+
+.card-view.is-clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-view.is-clickable:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.card-view.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.card-view.is-compact .card-view__cell {
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+}
+
+.card-view__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.card-view__cell {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.fruit-apple {
+  background: linear-gradient(160deg, #e85a4f, #c43c32);
+  color: #fff8f0;
+}
+
+.fruit-lemon {
+  background: linear-gradient(160deg, #f0d24a, #d4b020);
+  color: #3a3208;
+}
+
+.fruit-plum {
+  background: linear-gradient(160deg, #7a5cac, #5a3f8a);
+  color: #f4efff;
+}

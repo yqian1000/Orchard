@@ -1,0 +1,96 @@
+.hand-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: color-mix(in srgb, var(--panel) 92%, white);
+  border-left: 1px solid var(--line);
+  min-width: 280px;
+}
+
+.hand-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hand-panel__header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-family: var(--font-display);
+  color: var(--ink);
+}
+
+.hand-panel__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.hand-panel__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.hand-panel__empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.hand-panel__preview {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.hand-panel__card-wrap.is-guided {
+  border-radius: 12px;
+  padding: 4px;
+  animation: hand-guide 1.2s ease-in-out infinite;
+  box-shadow: 0 0 0 3px rgba(230, 195, 92, 0.65);
+}
+
+.hand-panel__card-wrap.is-locked-out {
+  opacity: 0.35;
+  filter: grayscale(0.4);
+  pointer-events: none;
+}
+
+.hand-panel__next {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.hand-panel__next h3 {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.btn.is-guide-btn {
+  border-color: #e6c35c;
+  box-shadow: 0 0 0 3px rgba(230, 195, 92, 0.45);
+  animation: hand-guide 1.2s ease-in-out infinite;
+}
+
+@keyframes hand-guide {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(230, 195, 92, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(230, 195, 92, 0.7);
+  }
+}

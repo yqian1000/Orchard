@@ -1,0 +1,99 @@
+.game-over {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  background: rgba(12, 20, 10, 0.55);
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.25s ease;
+}
+
+.game-over__card {
+  width: min(400px, calc(100vw - 32px));
+  padding: 28px 24px;
+  border-radius: 16px;
+  background:
+    linear-gradient(165deg, #f3efe3 0%, #e6e0d0 100%);
+  border: 1px solid rgba(40, 60, 30, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+  text-align: center;
+}
+
+.game-over__eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6a7258;
+}
+
+.game-over__card h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: #24351c;
+}
+
+.game-over__rank {
+  margin: 10px 0 18px;
+  font-size: 1.15rem;
+  color: #3d6b2e;
+  font-weight: 600;
+}
+
+.game-over__rank span {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #6a7258;
+}
+
+.game-over__card.is-won h2 {
+  color: #2f6b28;
+}
+
+.game-over__card.is-lost h2 {
+  color: #a43c2e;
+}
+
+.game-over__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.game-over__meta {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 20px;
+  text-align: left;
+}
+
+.game-over__meta div {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(40, 60, 30, 0.06);
+}
+
+.game-over__meta dt {
+  color: #6a7258;
+}
+
+.game-over__meta dd {
+  margin: 0;
+  font-weight: 600;
+  color: #24351c;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

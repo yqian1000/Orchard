@@ -1,0 +1,52 @@
+.tutorial-panel {
+  margin: 0 16px 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel) 85%, #fff6d0);
+  border: 1px solid var(--line);
+}
+
+.tutorial-panel__progress {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.tutorial-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(40, 60, 30, 0.2);
+}
+
+.tutorial-dot.is-done {
+  background: var(--leaf);
+}
+
+.tutorial-dot.is-active {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.tutorial-panel h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.tutorial-panel p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.tutorial-panel__action {
+  margin-top: 8px !important;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(230, 195, 92, 0.22);
+  color: #6a5410 !important;
+  font-weight: 600;
+}

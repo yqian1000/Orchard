@@ -1,0 +1,86 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+:root {
+  --ink: #1e2a18;
+  --muted: #5e6b52;
+  --leaf: #3f7a2e;
+  --accent: #c4a035;
+  --rotten: #b54a38;
+  --panel: #e8edd9;
+  --card-bg: #f4f7ea;
+  --line: rgba(40, 60, 30, 0.14);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Source Sans 3', 'Segoe UI', sans-serif;
+
+  font-family: var(--font-body);
+  line-height: 1.45;
+  font-weight: 400;
+  color: var(--ink);
+  background: #dfe6cf;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  min-width: 320px;
+  background:
+    radial-gradient(ellipse at top, rgba(255, 255, 240, 0.5), transparent 50%),
+    linear-gradient(180deg, #d5debf 0%, #c5d0a8 100%);
+}
+
+button {
+  font: inherit;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: #f3f6e8;
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: #fff;
+  border-color: var(--accent);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+}
+
+.btn-primary {
+  background: var(--leaf);
+  color: #f4f8ec;
+  border-color: transparent;
+  padding: 10px 18px;
+  font-weight: 600;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #4f9138;
+  border-color: transparent;
+}
